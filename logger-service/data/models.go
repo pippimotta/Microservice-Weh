@@ -6,10 +6,20 @@ import (
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 var client *mongo.Client
+
+func New(mongo *mongo.Client) Models {
+	client = mongo
+
+	return Models{
+		Logentry: LogEntry{},
+	}
+}
 
 type Models struct {
 	Logentry LogEntry
@@ -18,23 +28,15 @@ type Models struct {
 type LogEntry struct {
 	ID        string    `bson:"_id,omitempty" json:"id,omitempty"`
 	Name      string    `bson:"name" json:"name"`
-	Data      string    `bson:"name" json:"name"`
+	Data      string    `bson:"data" json:"data"`
 	CreatedAt time.Time `bson:"created_at" json:"created_at"`
 	UpdatedAt time.Time `bson:"updated_at" json:"updated_at"`
-}
-
-func New(mongo *mongo.Client) Models {
-	client = mongo
-
-	return Models{
-		LogEntry: LogEntry{},
-	}
 }
 
 func (l *LogEntry) Insert(entry LogEntry) error {
 	collection := client.Database("logs").Collection("logs")
 
-	_, err := collection.Insert(context.TODO(), LogEntry{
+	_, err := collection.InsertOne(context.TODO(), LogEntry{
 		Name:      entry.Name,
 		Data:      entry.Data,
 		CreatedAt: time.Now(),
@@ -86,7 +88,7 @@ func (l *LogEntry) GetOne(id string) (*LogEntry, error) {
 
 	collection := client.Database("logs").Collection("logs")
 
-	docID, err := primitive.ObjectIDFormHex(id)
+	docID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return nil, err
 	}
@@ -119,7 +121,7 @@ func (l *LogEntry) Update() (*mongo.UpdateResult, error) {
 
 	collection := client.Database("logs").Collection("logs")
 
-	docID, err := primitive.ObjectIDFormHex(l.ID)
+	docID, err := primitive.ObjectIDFromHex(l.ID)
 	if err != nil {
 		return nil, err
 	}

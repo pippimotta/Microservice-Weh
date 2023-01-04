@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"log-service/data"
+	"net/http"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -36,7 +38,7 @@ func main() {
 	defer cancel()
 
 	defer func() {
-		if err = client.disconnect(ctx); err != nil {
+		if err = client.Disconnect(ctx); err != nil {
 			panic(err)
 		}
 	}()
@@ -46,20 +48,18 @@ func main() {
 	}
 
 	// start web server
-	go app.serve()
-}
-
-func (app *Config) serve() {
-	srv := &http.server{
+	log.Println("Starting Service on port", webPort)
+	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%s", webPort),
 		Handler: app.routes(),
 	}
 
-	err := srv.ListenAndServe()
+	err = srv.ListenAndServe()
 	if err != nil {
 		log.Panic()
 	}
 }
+
 func connectToMongo() (*mongo.Client, error) {
 	//create connect options
 	clientOptions := options.Client().ApplyURI(mongoURL)
@@ -74,6 +74,7 @@ func connectToMongo() (*mongo.Client, error) {
 		log.Println("Error connecting", err)
 		return nil, err
 	}
+	log.Println("Mongo service starts!")
 	return c, nil
 
 }

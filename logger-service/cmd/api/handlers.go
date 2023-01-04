@@ -1,13 +1,16 @@
 package main
 
-import "net/http"
+import (
+	"log-service/data"
+	"net/http"
+)
 
 type JSONPayload struct {
 	Name string `json:"name"`
-	Data string `json:"data`
+	Data string `json:"data"`
 }
 
-func (app *Config) WriteLog(w http.ResponseWriter, r *http.Client) {
+func (app *Config) WriteLog(w http.ResponseWriter, r *http.Request) {
 	// read json into var
 	var requestPayload JSONPayload
 	_ = app.readJSON(w, r, &requestPayload)
@@ -18,7 +21,7 @@ func (app *Config) WriteLog(w http.ResponseWriter, r *http.Client) {
 		Data: requestPayload.Data,
 	}
 
-	err := app.Models.LogEntry.insert(event)
+	err := app.Models.Logentry.Insert(event)
 	if err != nil {
 		app.errorJSON(w, err)
 		return
