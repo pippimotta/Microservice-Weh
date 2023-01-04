@@ -2,9 +2,12 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"log"
+	"time"
+
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"log"
 )
 
 const (
@@ -17,6 +20,7 @@ const (
 var client *mongo.Client
 
 type Config struct {
+	Models data.Models
 }
 
 func main() {
@@ -26,8 +30,36 @@ func main() {
 		log.Panic(err)
 	}
 	client = mongoClient
+
+	//create a context in order to disconnect
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+
+	defer func() {
+		if err = client.disconnect(ctx); err != nil {
+			panic(err)
+		}
+	}()
+
+	app := Config{
+		Models: data.New(client),
+	}
+
+	// start web server
+	go app.serve()
 }
 
+func (app *Config) serve() {
+	srv := &http.server{
+		Addr:    fmt.Sprintf(":%s", webPort),
+		Handler: app.routes(),
+	}
+
+	err := srv.ListenAndServe()
+	if err != nil {
+		log.Panic()
+	}
+}
 func connectToMongo() (*mongo.Client, error) {
 	//create connect options
 	clientOptions := options.Client().ApplyURI(mongoURL)
