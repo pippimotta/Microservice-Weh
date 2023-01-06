@@ -59,7 +59,7 @@ func (l *LogEntry) All() ([]*LogEntry, error) {
 
 	cursor, err := collection.Find(context.TODO(), bson.D{}, opts)
 	if err != nil {
-		log.Println("FInding all doc error:", err)
+		log.Println("Finding all doc error:", err)
 		return nil, err
 	}
 
