@@ -25,7 +25,7 @@ type Message struct {
 	FromName     string
 	To           string
 	Subject      string
-	Attachements []string
+	Attachments []string
 	Data         any
 	DataMap      map[string]any
 }
@@ -73,8 +73,8 @@ func (m *Mail) SendSMTPMessage(msg Message) error {
 	email.SetBody(mail.TextPlain, plainMessage)
 	email.AddAlternative(mail.TextHTML, formattedMessage)
 
-	if len(msg.Attachements) > 0 {
-		for _, x := range msg.Attachements {
+	if len(msg.Attachments) > 0 {
+		for _, x := range msg.Attachments {
 			email.AddAttachment(x)
 		}
 	}
