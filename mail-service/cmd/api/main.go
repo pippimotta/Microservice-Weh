@@ -36,7 +36,7 @@ func newMail() Mail {
 	port , _ := strconv.Atoi(os.Getenv("MAIL_PORT"))
 	m := Mail {
 		Domain: os.Getenv("MAIL_DOMAIN") ,
-		Host: os.Getenv("HOST") ,
+		Host: os.Getenv("MAIL_HOST") ,
 		Port: port,
 		Username: os.Getenv("USER_NAME"),
 		Password: os.Getenv("MAIL_PASSWORD"),

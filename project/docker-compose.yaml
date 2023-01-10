@@ -49,8 +49,8 @@ services:
       MAIL_ENCRYPTION: none
       MAIL_USERNAME: ""
       MAIL_PASSWORD: ""
-      FROM_NAME: "John Smith"
-      FROM_ADDRESS: john.smith@example.com
+      FROM_NAME: "Mushroom Brilliant"
+      FROM_ADDRESS: mushroom@example.com
 
   postgres:
     image: 'postgres:14.2'
