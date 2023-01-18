@@ -51,28 +51,33 @@ func main() {
 
 	// register rpcServer
 	err = rpc.Register(new(RPCServer))
+	if  err != nil {
+		log.Panic()
+	}
 	go app.rpcListen()
 
 
 
 	// start web server
-	log.Println("Starting Service on port", webPort)
+
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%s", webPort),
 		Handler: app.routes(),
 	}
 
 	err = srv.ListenAndServe()
+	log.Println("Starting Service on port", webPort)
 	if err != nil {
 		log.Panic()
 	}
 }
 func (app *Config)rpcListen() error{
-	log.Printf("Starting RPC Server on port %s", gRpcPort)
-	lis, err := net.Listen("tcp", fmt.Sprintf("0.0.0.0*%s", gRpcPort))
+
+	lis, err := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%s", rpcPort))
 	if err != nil {
 		return err
 	}
+	log.Printf("Starting RPC Server on port %s", rpcPort)
 	defer lis.Close()
 
 	for {
