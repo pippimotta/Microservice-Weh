@@ -55,6 +55,7 @@ func main() {
 		log.Panic()
 	}
 	go app.rpcListen()
+  go app.gRPCListen()
 
 
 
